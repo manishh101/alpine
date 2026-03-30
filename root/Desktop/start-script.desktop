@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=File Server
+Exec=/root/Desktop/http-server.sh
+Icon=/root/Downloads/share.png
+Terminal=true
+Categories=Utility
