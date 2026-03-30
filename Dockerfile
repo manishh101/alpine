@@ -1,11 +1,12 @@
-FROM alpine:3.21
+FROM alpine:edge
 
 # Copy custom repositories from the case study
 COPY etc/apk/repositories /etc/apk/repositories
 
 # Disable defunct Bintray repository and install dependencies
 # We need nodejs for the file transfer server and bash for the run script
-RUN sed -i 's/dl.bintray.com/#dl.bintray.com/g' /etc/apk/repositories && \
+RUN sed -i '/dl.bintray.com/d' /etc/apk/repositories && \
+    sed -i '/packages.sury.org/d' /etc/apk/repositories && \
     apk update && \
     apk add --no-cache nodejs npm bash
 
@@ -15,13 +16,9 @@ COPY root /root
 # Set the working directory to the root of the customized setup
 WORKDIR /root
 
-# The repository contains 'http_server_modules', which is a node_modules folder.
-# We'll rename it to 'node_modules' so npm/node can find it properly.
-RUN mv http_server_modules node_modules && \
+# We will install http-server globally to ensure it works properly across environments.
+RUN npm install -g http-server && \
     chmod +x Desktop/http-server.sh
-
-# Add the local node_modules bin to PATH so 'http-server' can be found
-ENV PATH="/root/node_modules/.bin:${PATH}"
 
 # Expose port 8080 (the default for http-server)
 EXPOSE 8080
