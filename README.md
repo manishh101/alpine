@@ -18,6 +18,13 @@ This case study explores **Alpine Linux**, a lightweight and security-oriented L
 1. **Disk Installation**: Using GNOME Boxes for a traditional OS setup.
 2. **Docker Installation**: Running Alpine as a lightweight container.
 
+   ```bash
+   # Build the custom Alpine image
+   docker build -t alpine-os .
+
+   # Run the container (exposes port 8080 for the payload HTTP server)
+   docker run -p 8080:8080 -d alpine-os
+   ```
 ## Custom Modifications
 ### Graphical User Interface (GUI)
 Installed **XFCE** for a minimal desktop environment, enhancing usability while keeping resource consumption low.
@@ -35,8 +42,17 @@ Created an Alpine-based **custom ISO** with pre-installed tools and configuratio
 ![Custom ISO Creation](https://github.com/5ujan/OS/blob/main/screenshots/custom-image-installation.png?raw=true)
 
 
+### Enhanced System Info (sysinfo+)
+A custom **native BusyBox applet** written in C that provides a high-performance, colorized dashboard of system metrics. Instead of relying on slow shell scripts, it reads directly from `/proc` to display:
+- **CPU & Memory Usage:** Real-time percentage and total/used values.
+- **System Uptime & Processes:** Formatted uptime and running process count.
+
+![sysinfo+ Applet](screenshots/sysinfo.png)
+
 ### Security Hardening (setup-secure-mode)
 A **native BusyBox applet** that automates system security hardening with three modes:
+
+![setup-secure-mode Help](screenshots/setup-secure-mode-help.png)
 
 ```bash
 setup-secure-mode              # Apply standard (default) security config
@@ -58,6 +74,17 @@ setup-secure-mode --only ssh   # Apply single module only
 | `ssh` | SSH hardening (disable root login, key-only in strict) |
 | `fail2ban` | Intrusion prevention (ban after failed logins) |
 | `permissions` | Secure file permissions (.ssh, authorized_keys) |
+
+#### Modes in Action
+
+**Standard Mode:** Focuses on a balanced security approach, enabling firewall, updating the system, applying SSH hardening, and integrating `fail2ban`.
+![Standard Mode](screenshots/setup-secure-mode.png)
+
+**Minimal Mode:** A lighter touch that only handles system updates and basic firewall rules.
+![Minimal Mode](screenshots/setup-secure-mode-minimal.png)
+
+**Strict Mode:** Enforces maximum security, disabling password-based authentication in favor of key-only access to prevent brute force attacks alongside other standard protections.
+![Strict Mode](screenshots/setup-secure-mode-strict.png)
 
 All operations are logged to `/var/log/secure-mode.log` with automatic backups in `/var/backups/secure-mode/`.
 
