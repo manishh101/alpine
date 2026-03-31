@@ -17,8 +17,10 @@ WORKDIR /busybox-1.37.0
 COPY busybox-applets/sysinfoplus.c miscutils/sysinfoplus.c
 
 # Regenerate build files so BusyBox picks up our applet's metadata,
-# then configure and compile
+# then configure and compile.
+# We disable CONFIG_TC because it fails to build with newer Linux headers.
 RUN make defconfig && \
+    sed -i 's/^CONFIG_TC=y/# CONFIG_TC is not set/' .config && \
     make -j$(nproc)
 
 ###############################################

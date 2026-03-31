@@ -15,6 +15,7 @@
 //config:	memory usage, uptime, and process count. A custom applet
 //config:	created for the Alpine Linux OS Case Study.
 
+//applet:IF_SYSINFOPLUS(APPLET_ODDNAME(sysinfo+, sysinfoplus, BB_DIR_USR_BIN, BB_SUID_DROP, sysinfoplus))
 //applet:IF_SYSINFOPLUS(APPLET(sysinfoplus, BB_DIR_USR_BIN, BB_SUID_DROP))
 
 //kbuild:lib-$(CONFIG_SYSINFOPLUS) += sysinfoplus.o
