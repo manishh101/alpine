@@ -14,17 +14,43 @@ This case study explores **Alpine Linux**, a lightweight and security-oriented L
   - RAM-Only Mode
   - Docker-Based Installation
 
-## Installation Methods Explored
-1. **Disk Installation**: Using GNOME Boxes for a traditional OS setup.
-2. **Docker Installation**: Running Alpine as a lightweight container.
+## Installation & Usage Guide
 
-   ```bash
-   # Build the custom Alpine image
-   docker build -t alpine-os .
+This project leverages Docker to build a customized Alpine environment and distribute the security payload to a virtual machine (if testing on GNOME Boxes or VirtualBox).
 
-   # Run the container (exposes port 8080 for the payload HTTP server)
-   docker run -p 8080:8080 -d alpine-os
-   ```
+### 1. Clone the Repository
+First, clone the project to your local machine:
+```bash
+git clone https://github.com/manishh101/alpine-case-study.git
+cd alpine-case-study
+```
+
+### 2. Build and Run the Docker Environment
+The Docker container compiles our customized BusyBox applets (`setup-secure-mode` and `sysinfo+`) and hosts a local HTTP server to distribute these binaries to your Alpine VM.
+
+```bash
+# Build the custom Alpine image
+docker build -t alpine-os .
+
+# Run the container (exposes port 8080 for the payload HTTP server)
+docker run -p 8080:8080 -d alpine-os
+```
+
+### 3. Deploying to an Alpine VM (Optional)
+If you are running a fresh Alpine Linux installation (e.g., via GNOME Boxes) and want to apply these custom security modules, you can securely pull the payload from your Docker host.
+
+Inside your Alpine VM, run:
+```bash
+# Replace <HOST_IP> with your Docker host's local IP address
+wget http://<HOST_IP>:8080/Desktop/install-secure-mode.sh
+chmod +x install-secure-mode.sh
+./install-secure-mode.sh
+```
+
+### 4. Running the Tools
+Once installed (either natively in the Docker shell or on your VM), you can instantly use the new commands:
+- Run `sysinfo+` to view real-time system metrics.
+- Run `setup-secure-mode --help` to view security hardening options.
 ## Custom Modifications
 ### Graphical User Interface (GUI)
 Installed **XFCE** for a minimal desktop environment, enhancing usability while keeping resource consumption low.
