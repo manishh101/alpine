@@ -61,12 +61,19 @@ RUN mkdir -p /var/backups/secure-mode /var/log
 # Copy the root filesystem contents to the container
 COPY root /root
 
+# Prepare the payload directory for the VM to download the new files
+RUN mkdir -p /root/Desktop/payload && \
+    cp /bin/busybox /root/Desktop/payload/busybox && \
+    cp /etc/nftables/nftables.nft /root/Desktop/payload/nftables.nft && \
+    cp /etc/fail2ban/jail.local /root/Desktop/payload/jail.local
+
 # Set the working directory to the root of the customized setup
 WORKDIR /root
 
 # We will install http-server globally to ensure it works properly across environments.
 RUN npm install -g http-server && \
-    chmod +x Desktop/http-server.sh
+    chmod +x Desktop/http-server.sh && \
+    chmod +x Desktop/install-secure-mode.sh
 
 # Expose port 8080 (the default for http-server)
 EXPOSE 8080
