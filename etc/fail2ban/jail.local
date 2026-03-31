@@ -1,0 +1,22 @@
+# setup-secure-mode: Fail2Ban SSH Jail Configuration
+# Monitors SSH login attempts and bans repeated failures
+
+[DEFAULT]
+# Ban duration: 10 minutes
+bantime  = 600
+
+# Time window to count failures: 10 minutes
+findtime = 600
+
+# Maximum failed attempts before ban
+maxretry = 5
+
+# Ban action using nftables (Alpine default)
+banaction = nftables-multiport
+
+[sshd]
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 5

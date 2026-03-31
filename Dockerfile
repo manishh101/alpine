@@ -1,5 +1,7 @@
 ###############################################
-# Stage 1: Build custom BusyBox with sysinfo+ applet
+# Stage 1: Build custom BusyBox with applets
+#   - sysinfo+          (system information)
+#   - setup-secure-mode (security hardening)
 ###############################################
 FROM alpine:edge AS busybox-builder
 
@@ -13,10 +15,11 @@ RUN wget -q https://busybox.net/downloads/busybox-1.37.0.tar.bz2 && \
 
 WORKDIR /busybox-1.37.0
 
-# Copy our custom applet into the BusyBox source tree
+# Copy our custom applets into the BusyBox source tree
 COPY busybox-applets/sysinfoplus.c miscutils/sysinfoplus.c
+COPY busybox-applets/setup_secure_mode.c miscutils/setup_secure_mode.c
 
-# Regenerate build files so BusyBox picks up our applet's metadata,
+# Regenerate build files so BusyBox picks up our applets' metadata,
 # then configure and compile.
 # We disable CONFIG_TC because it fails to build with newer Linux headers.
 RUN make defconfig && \
@@ -33,17 +36,27 @@ COPY etc/apk/repositories /etc/apk/repositories
 
 # Disable defunct Bintray repository and install dependencies
 # We need nodejs for the file transfer server and bash for the run script
+# We also install security tool dependencies for setup-secure-mode
 RUN sed -i '/dl.bintray.com/d' /etc/apk/repositories && \
     sed -i '/packages.sury.org/d' /etc/apk/repositories && \
     apk update && \
-    apk add --no-cache nodejs npm bash
+    apk add --no-cache nodejs npm bash \
+        nftables openssh fail2ban openrc
 
 # Replace the default BusyBox with our custom build
 COPY --from=busybox-builder /busybox-1.37.0/busybox /bin/busybox
 
-# Create the sysinfoplus symlink (BusyBox multi-call style)
+# Create applet symlinks (BusyBox multi-call style)
 RUN ln -sf /bin/busybox /usr/bin/sysinfoplus && \
-    ln -sf /bin/busybox /usr/bin/sysinfo+
+    ln -sf /bin/busybox /usr/bin/sysinfo+ && \
+    ln -sf /bin/busybox /usr/sbin/setup-secure-mode
+
+# Copy configuration files for security tools
+COPY etc/nftables/nftables.nft /etc/nftables/nftables.nft
+COPY etc/fail2ban/jail.local /etc/fail2ban/jail.local
+
+# Create required directories for setup-secure-mode
+RUN mkdir -p /var/backups/secure-mode /var/log
 
 # Copy the root filesystem contents to the container
 COPY root /root

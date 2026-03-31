@@ -171,7 +171,7 @@ int sysinfoplus_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 	/* Display */
 	printf("\n");
 	printf("  %s%s╔══════════════════════════════════════╗%s\n", BOLD, CYAN, RESET);
-	printf("  %s%s║      %s⚙  System Information  ⚙%s       ║%s\n", BOLD, CYAN, WHITE, CYAN, RESET);
+	printf("  %s%s║      %s⚙  System Information  ⚙%s    ║%s\n", BOLD, CYAN, WHITE, CYAN, RESET);
 	printf("  %s%s╚══════════════════════════════════════╝%s\n", BOLD, CYAN, RESET);
 	printf("  %s\n", LINE);
 	printf("  %sCPU Usage%s      :  %s%d%%%s\n", GREEN, RESET, YELLOW, cpu_usage, RESET);

@@ -35,6 +35,32 @@ Created an Alpine-based **custom ISO** with pre-installed tools and configuratio
 ![Custom ISO Creation](https://github.com/5ujan/OS/blob/main/screenshots/custom-image-installation.png?raw=true)
 
 
+### Security Hardening (setup-secure-mode)
+A **native BusyBox applet** that automates system security hardening with three modes:
+
+```bash
+setup-secure-mode              # Apply standard (default) security config
+setup-secure-mode minimal      # Basic: updates + firewall only
+setup-secure-mode standard     # Recommended: + SSH hardening + fail2ban
+setup-secure-mode strict       # Maximum: + disable password auth
+
+# Safety options
+setup-secure-mode --dry-run    # Preview changes without applying
+setup-secure-mode --rollback   # Restore previous configuration
+setup-secure-mode --only ssh   # Apply single module only
+```
+
+**Security modules included:**
+| Module | Description |
+|--------|-------------|
+| `update` | System package updates |
+| `firewall` | nftables rules (allow SSH, block incoming) |
+| `ssh` | SSH hardening (disable root login, key-only in strict) |
+| `fail2ban` | Intrusion prevention (ban after failed logins) |
+| `permissions` | Secure file permissions (.ssh, authorized_keys) |
+
+All operations are logged to `/var/log/secure-mode.log` with automatic backups in `/var/backups/secure-mode/`.
+
 ## Use Cases
 - **Containerization**: Ideal for lightweight, scalable deployments.
 - **Embedded Systems**: Suited for low-resource environments.
