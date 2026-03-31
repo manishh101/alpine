@@ -426,6 +426,8 @@ static void setup_fail2ban(void)
 	}
 
 	print_ok("Enabling fail2ban service...");
+	/* fail2ban will crash on startup if the monitored log file doesn't exist yet */
+	run_cmd("touch /var/log/auth.log 2>/dev/null");
 	run_cmd("rc-update add fail2ban default 2>/dev/null");
 	run_cmd("service fail2ban start 2>/dev/null");
 
